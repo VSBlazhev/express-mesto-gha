@@ -14,9 +14,16 @@ module.exports.getUserById = (req, res) =>{
 
 module.exports.createUser = (req,res) =>{
     const {name , about, avatar} = req.body
-    User.create({name, about, avatar})
+    User.create({name, about, avatar}/* , {
+        new: true, // обработчик then получит на вход обновлённую запись
+        runValidators: true} */)
     .then(user=>{res.send({data: user})})
-    .catch((err) =>{console.log(err.message)})
+    .catch((err) =>{
+        if (err.name === 'ValidationError') {
+          return res.status(400).send({ message: 'переданы некорректные данные' });
+        }
+        res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      })
 }
 
 module.exports.patchUserInfo = (req,res)=>{
