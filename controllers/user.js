@@ -14,9 +14,9 @@ module.exports.getUserById = (req, res) =>{
 
 module.exports.createUser = (req,res) =>{
     const {name , about, avatar} = req.body
-    User.create({name, about, avatar}/* , {
+    User.create({name, about, avatar}, {
         new: true, // обработчик then получит на вход обновлённую запись
-        runValidators: true} */)
+        runValidators: true})
     .then(user=>{res.send({data: user})})
     .catch((err) =>{
         if (err.name === 'ValidationError') {
