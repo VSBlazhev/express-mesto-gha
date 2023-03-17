@@ -7,7 +7,7 @@ module.exports.getUsers = (req, res) =>{
 }
 
 module.exports.getUserById = (req, res) =>{
-    User.find(req.params.userId)
+    User.findById(req.params.userId)
     .then(user =>{res.send({data: user})})
     .catch((err) =>{console.log(err.message)})
 }
