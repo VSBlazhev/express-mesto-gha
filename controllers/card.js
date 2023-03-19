@@ -33,14 +33,14 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findByIdAndRemove(req.params.cardId, {new: true})
     .then((card) => {
       if (!card) {
         res.status(NOT_FOUND).send({ message: "Карточка не найдена" });
-      }
+      } else{
       res
         .status(SUCCESS)
-        .send({ data: card, message: "Карточка успешно удалена" });
+        .send({ message: "Карточка успешно удалена" })};
     })
     .catch((err) => {
       if (err.name === "CastError") {
