@@ -3,4 +3,6 @@ const NOT_FOUND = 404;
 const DEFAULT_ERROR = 500;
 const SUCCESS = 200;
 
-module.exports = { WRONG_DATA, NOT_FOUND, DEFAULT_ERROR, SUCCESS };
+module.exports = {
+  WRONG_DATA, NOT_FOUND, DEFAULT_ERROR, SUCCESS,
+};

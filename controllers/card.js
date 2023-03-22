@@ -1,18 +1,19 @@
-const Card = require("../models/card");
+const Card = require('../models/card');
 const {
   WRONG_DATA,
   NOT_FOUND,
   DEFAULT_ERROR,
   SUCCESS,
-} = require("../utils/constants");
+} = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
+    .populate(['owner', 'likes'])
     .then((cards) => {
       res.status(SUCCESS).send({ data: cards });
     })
-    .catch((err) => {
-      res.status(DEFAULT_ERROR).send({ message: "Ошибка по умолчанию." });
+    .catch(() => {
+      res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -23,32 +24,32 @@ module.exports.createCard = (req, res) => {
       res.status(SUCCESS).send({ data: card });
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         return res
           .status(WRONG_DATA)
-          .send({ message: "переданы некорректные данные" });
+          .send({ message: 'переданы некорректные данные' });
       }
-      res.status(DEFAULT_ERROR).send({ message: "Ошибка по умолчанию." });
+      return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId, {new: true})
+  Card.findByIdAndRemove(req.params.cardId, { new: true })
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({ message: "Карточка не найдена" });
-      } else{
-      res
+        return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
+      }
+      return res
         .status(SUCCESS)
-        .send({data:card,  message: "Карточка успешно удалена" })};
+        .send({ data: card, message: 'Карточка успешно удалена' });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         return res
           .status(WRONG_DATA)
-          .send({ message: "переданы некорректные данные" });
+          .send({ message: 'переданы некорректные данные' });
       }
-      res.status(DEFAULT_ERROR).send({ message: "Ошибка по умолчанию." });
+      return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -56,21 +57,22 @@ module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
+    .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({ message: "Карточка не найдена" });
+        return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
-      res.status(SUCCESS).send({ data: card });
+      return res.status(SUCCESS).send({ data: card });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         return res
           .status(WRONG_DATA)
-          .send({ message: "переданы некорректные данные" });
+          .send({ message: 'переданы некорректные данные' });
       }
-      res.status(DEFAULT_ERROR).send({ message: "Ошибка по умолчанию." });
+      return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -78,20 +80,21 @@ module.exports.removeLike = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
+    .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({ message: "Карточка не найдена" });
+        return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
-      res.status(SUCCESS).send({ data: card });
+      return res.status(SUCCESS).send({ data: card });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         return res
           .status(WRONG_DATA)
-          .send({ message: "переданы некорректные данные" });
+          .send({ message: 'переданы некорректные данные' });
       }
-      res.status(DEFAULT_ERROR).send({ message: "Ошибка по умолчанию." });
+      return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
     });
 };

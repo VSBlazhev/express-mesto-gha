@@ -3,7 +3,6 @@
         "es2021": true
     },
     "extends": [
-        "eslint: recomьended",
         "airbnb-base"
     ],
     "overrides": [
@@ -13,6 +12,6 @@
     },
     "rules": {
         "no-underscore-dangle": ["error", { "allow": ["_id"] }],
-    "no-console": 0
+    "no-console": 1
     }
 }
