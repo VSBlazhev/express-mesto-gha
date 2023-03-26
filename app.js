@@ -7,6 +7,7 @@ const cardsRouter = require('./routes/cards');
 const {loginUser, createUser} = require('./controllers/user')
 const {loginValidation, createUserValidation} = require('./middlewares/userValidation')
 const auth = require('./middlewares/auth')
+const {Joi,celebrate} = require('celebrate')
 
 const { PORT = 3000 } = process.env;
 
