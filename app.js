@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-const {login, createUser} = require('./controllers/user')
+const {login, createUser, loginUser} = require('./controllers/user')
 const auth = require('./middlewares/auth')
 
 const { PORT = 3000 } = process.env;
@@ -26,7 +26,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
   next();
 }); */
 
-app.post('/signin', login);
+app.post('/signin', loginUser);
 app.post('/signup', createUser);
 
 app.use('/users',auth, usersRouter);
