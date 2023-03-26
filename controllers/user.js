@@ -36,7 +36,7 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
   bcrypt.hash(password, 10)
   .then((hash)=>{
-  User.create({ name, about, avatar, email, password: hash })
+  User.create({ name, about, avatar, email, password: hash }, {runValidators: true})
 })
     .then((user) => {
       res.status(SUCCESS).send({ data: user }); /* не приходит в ответ JSON  */
