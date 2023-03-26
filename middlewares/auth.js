@@ -9,7 +9,7 @@ let payload
 try{
   payload = jwt.verify(token, 'key')
 } catch(err){
-
+return res.status(401).send({message: err.message})
 }
 req.user = payload
 next()
