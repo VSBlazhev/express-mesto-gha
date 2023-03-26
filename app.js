@@ -29,7 +29,14 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 }); */
 
 app.post('/signin',loginValidation, loginUser);
-app.post('/signup',createUserValidation, createUser);
+app.post('/signup',celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about:Joi.string().min(2).max(30),
+    avatar:Joi.string().regex(regex),
+    email:Joi.string().required().email(),
+    password:Joi.string().required()
+  })}), createUser);
 
 app.use('/users',auth, usersRouter);
 app.use('/cards',auth, cardsRouter);
