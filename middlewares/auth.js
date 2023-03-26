@@ -11,6 +11,6 @@ try{
 } catch(err){
 return res.status(401).send({message: err.message})
 }
-req.user._id = payload
+req.user = payload
 next()
 }

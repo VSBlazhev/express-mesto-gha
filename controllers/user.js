@@ -90,21 +90,16 @@ module.exports.updateAvatar = (req, res) => {
 module.exports.loginUser = (req,res) => {
   const {email, password} = req.body;
 
-  User.findOne({email}).select('+password')
-    .then((user)=>{
-      if(!user){
-        return res.status(NOT_FOUND).send({message: 'Пользователь не найден'})
-      }
-      return bcrypt.compare(password, user.password)
-    })
-    .then((matched)=>{
-      if(!matched){
-        return res.status(401).send({message:"Неправильная почта или пароль"})
-      }
-      const token = jwt.sign({_id: user._id}, 'key')
+  User.findUserByCredentials(email, password)
+  .then((user)=>{
+    const token = jwt.sign({_id: user._id}, 'key')
+    res.cookie('jwt', token,{ maxAge: 3600000 * 24 * 7, httpOnly: true }).send({token})
+  })
+  .catch((err)=>{
+    res.status(401).send({ message: err.message })
+  })
 
-      res.cookie('jwt', token,{ maxAge: 3600000 * 24 * 7, httpOnly: true }).send({token})
-    })
+
 }
 
 module.exports.currentUser = (req,res) =>{
