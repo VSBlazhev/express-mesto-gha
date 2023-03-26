@@ -34,15 +34,17 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId, { new: true })
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
-      return res
-        .status(SUCCESS)
-        .send({ data: card, message: 'Карточка успешно удалена' });
-    })
+      if(card.owner.toString() !== req.user._id){
+       return res.status(4101).send({message:"Ошибка прав"})
+      }
+     Card.remove(card)
+      })
+     .then(()=> res.status(SUCCESS).send({message: "Карточка удалена"}))
     .catch((err) => {
       if (err.name === 'CastError') {
         return res
@@ -98,3 +100,5 @@ module.exports.removeLike = (req, res) => {
       return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
     });
 };
+
+

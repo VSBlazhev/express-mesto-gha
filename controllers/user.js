@@ -5,6 +5,8 @@ const {
   DEFAULT_ERROR,
   SUCCESS,
 } = require('../utils/constants');
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -31,10 +33,13 @@ module.exports.getUserById = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  const { name, about, avatar, email, password } = req.body;
+  bcrypt.hash(password, 10)
+  .then((hash)=>{
+  User.create({ name, about, avatar, email, password: hash })
+})
     .then((user) => {
-      res.status(SUCCESS).send({ data: user });
+      res.status(SUCCESS).send({ data: user }); /* не приходит в ответ JSON  */
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -81,3 +86,28 @@ module.exports.updateAvatar = (req, res) => {
       return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
     });
 };
+
+module.exports.loginUser = (req,res) => {
+  const {email, password} = req.body;
+
+  User.findOne({email}).select('+password')
+    .then((user)=>{
+      if(!user){
+        return res.status(NOT_FOUND).send({message: 'Пользователь не найден'})
+      }
+      return bcrypt.compare(password, user.password)
+    })
+    .then((matched)=>{
+      if(!matched){
+        return res.status(401).send({message:"Неправильная почта или пароль"})
+      }
+      const token = jwt.sign({_id: user._id}, 'key')
+
+      res.cookie('jwt', token,{ maxAge: 3600000 * 24 * 7, httpOnly: true }).end()
+    })
+}
+
+module.exports.currentUser = (req,res) =>{
+  User.findById(req.user._id)
+  .then((user)=> res.send({data: user}))
+}
