@@ -7,8 +7,8 @@ const cardsRouter = require('./routes/cards');
 const {loginUser, createUser} = require('./controllers/user')
 const {loginValidation, createUserValidation} = require('./middlewares/userValidation')
 const auth = require('./middlewares/auth')
-const {Joi,celebrate} = require('celebrate')
-
+const {Joi, celebrate} = require('celebrate')
+const regex = /(ftp|http|https):\/\/.(www\.)?[a-z\-\d]+\.[\w\-.~:/?#[\]@!$&'()*+,;=]{1,}#?/i;
 const { PORT = 3000 } = process.env;
 
 const { NOT_FOUND } = require('./utils/constants');
