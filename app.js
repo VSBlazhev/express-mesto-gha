@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-const {login, createUser, loginUser} = require('./controllers/user')
+const {loginUser, createUser} = require('./controllers/user')
+const {loginValidation, createUserValidation} = require('./middlewares/userValidation')
 const auth = require('./middlewares/auth')
 
 const { PORT = 3000 } = process.env;
@@ -15,7 +17,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(cookieParser())
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
 /* app.use((req, res, next) => {
@@ -26,8 +28,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
   next();
 }); */
 
-app.post('/signin', loginUser);
-app.post('/signup', createUser);
+app.post('/signin',loginValidation, loginUser);
+app.post('/signup',createUserValidation, createUser);
 
 app.use('/users',auth, usersRouter);
 app.use('/cards',auth, cardsRouter);
