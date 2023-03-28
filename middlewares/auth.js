@@ -1,9 +1,11 @@
 const jwt = require('jsonwebtoken')
 
 module.exports = (req,res, next)=>{
-const token = req.cookie.jwt
+const token = req.cookies.jwt
+
 if(!token){
-  return res.status(401).send({message: "Необходима афторизация"})
+  /* console.log(err.name) */
+  return res.status(401).send({message: "Необходима авторизация"})
 }
 let payload
 try{

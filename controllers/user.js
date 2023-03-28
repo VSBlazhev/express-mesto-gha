@@ -34,15 +34,19 @@ module.exports.getUserById = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
+  console.log(req.body)
   bcrypt.hash(password, 10)
   .then((hash)=>{
-  User.create({ name, about, avatar, email, password: hash }, {runValidators: true})
+ return User.create({ name, about, avatar, email, password: hash })
 })
     .then((user) => {
-      res.status(SUCCESS).send({ data: user }); /* не приходит в ответ JSON  */
+
+      res.status(SUCCESS).send({ data: user });
     })
     .catch((err) => {
+      console.log(err)
       if (err.name === 'ValidationError') {
+
         return res
           .status(WRONG_DATA)
           .send({ message: 'переданы некорректные данные' });
@@ -89,9 +93,10 @@ module.exports.updateAvatar = (req, res) => {
 
 module.exports.loginUser = (req,res) => {
   const {email, password} = req.body;
-
+  console.log(req.body)
   User.findUserByCredentials(email, password)
   .then((user)=>{
+
     const token = jwt.sign({_id: user._id}, 'key')
     res.cookie('jwt', token,{ maxAge: 3600000 * 24 * 7, httpOnly: true }).send({token})
   })
@@ -102,7 +107,9 @@ module.exports.loginUser = (req,res) => {
 
 }
 
-module.exports.currentUser = (req,res) =>{
-  User.findById(req.user._id)
+module.exports.getCurrentUser = (req,res) =>{
+ const userId = req.user._id
+ console.log(userId)
+ return User.findById(userId)
   .then((user)=> res.send({data: user}))
 }

@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
@@ -8,17 +8,16 @@ const {loginUser, createUser} = require('./controllers/user')
 const {loginValidation, createUserValidation} = require('./middlewares/userValidation')
 const auth = require('./middlewares/auth')
 const {Joi, celebrate} = require('celebrate')
-const regex = /(ftp|http|https):\/\/.(www\.)?[a-z\-\d]+\.[\w\-.~:/?#[\]@!$&'()*+,;=]{1,}#?/i;
 const { PORT = 3000 } = process.env;
 
 const { NOT_FOUND } = require('./utils/constants');
 
 
 const app = express();
-
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser())
+
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
 /* app.use((req, res, next) => {
@@ -29,15 +28,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
   next();
 }); */
 
-app.post('/signin',loginValidation, loginUser);
-app.post('/signup',celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about:Joi.string().min(2).max(30),
-    avatar:Joi.string().regex(regex),
-    email:Joi.string().required().email(),
-    password:Joi.string().required()
-  })}), createUser);
+app.post('/signin', loginUser);
+app.post('/signup', createUser);
 
 app.use('/users',auth, usersRouter);
 app.use('/cards',auth, cardsRouter);

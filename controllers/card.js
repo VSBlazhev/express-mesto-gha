@@ -40,12 +40,15 @@ module.exports.deleteCard = (req, res) => {
         return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
       if(card.owner.toString() !== req.user._id){
-       return res.status(4101).send({message:"Ошибка прав"})
+        console.log(card.owner)
+        console.log(req.user._id)
+       return res.send({message:"Ошибка прав"})
       }
      Card.remove(card)
       })
      .then(()=> res.status(SUCCESS).send({message: "Карточка удалена"}))
     .catch((err) => {
+      console.log(err)
       if (err.name === 'CastError') {
         return res
           .status(WRONG_DATA)
