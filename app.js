@@ -5,9 +5,8 @@ const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const {loginUser, createUser} = require('./controllers/user')
-const {loginValidation, createUserValidation} = require('./middlewares/userValidation')
 const auth = require('./middlewares/auth')
-const {Joi, celebrate} = require('celebrate')
+const errHandler = require('./middlewares/errHandler')
 const { PORT = 3000 } = process.env;
 
 const { NOT_FOUND } = require('./utils/constants');
@@ -38,6 +37,7 @@ app.use('/*', (req, res) => {
   res.status(NOT_FOUND).send({ message: 'Страница не найдена' });
 });
 
+app.use(errHandler)
 app.listen(PORT, () => {
   /* console.log(`App listening on port ${PORT}`) */
 });

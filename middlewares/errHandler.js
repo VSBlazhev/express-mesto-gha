@@ -6,7 +6,7 @@ const {
   AUTH_ERROR
 } = require('../utils/constants');
 
-const errHandler = (err, req, res, next)=>{
+const errHandler = (err, req, res, next) =>{
   if (err.code === 11000) {
    return res.status(DB_ERROR).send({messge:"Email уже используется"})
 }
@@ -22,5 +22,8 @@ if (err.name === 'ValidationError') {
     .send({ message: 'переданы некорректные данные' });
 }
 
-
+return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
+next()
 }
+
+module.exports = errHandler
