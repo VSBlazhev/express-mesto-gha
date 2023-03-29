@@ -1,10 +1,8 @@
 const Card = require('../models/card');
 const {
-  WRONG_DATA,
   NOT_FOUND,
-  DEFAULT_ERROR,
   SUCCESS,
-  FORBIDDEN
+  FORBIDDEN,
 } = require('../utils/constants');
 
 module.exports.getCards = (req, res, next) => {
@@ -13,7 +11,7 @@ module.exports.getCards = (req, res, next) => {
     .then((cards) => {
       res.status(SUCCESS).send({ data: cards });
     })
-    .catch(next)
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -22,25 +20,25 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => {
       res.status(SUCCESS).send({ data: card });
     })
-    .catch(next)
+    .catch(next);
 };
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
+    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
         return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
-      if(card.owner.toString() !== req.user._id){
-
-       return res.status(FORBIDDEN).send({message:"Ошибка прав"})
+      if (card.owner.toString() !== req.user._id) {
+        return res.status(FORBIDDEN).send({ message: 'Ошибка прав' });
       }
-     Card.findByIdAndRemove(req.params.cardId)
-     .then(()=> res.status(SUCCESS).send({message: "Карточка удалена"}))
-     .catch(next)
-      })
-    .catch(next)
-    }
+      Card.findByIdAndRemove(req.params.cardId)
+        .then(() => res.status(SUCCESS).send({ message: 'Карточка удалена' }))
+        .catch(next);
+    })
+    .catch(next);
+};
 
 module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
@@ -55,7 +53,7 @@ module.exports.likeCard = (req, res, next) => {
       }
       return res.status(SUCCESS).send({ data: card });
     })
-    .catch(next)
+    .catch(next);
 };
 
 module.exports.removeLike = (req, res, next) => {
@@ -71,7 +69,5 @@ module.exports.removeLike = (req, res, next) => {
       }
       return res.status(SUCCESS).send({ data: card });
     })
-    .catch(next)
+    .catch(next);
 };
-
-

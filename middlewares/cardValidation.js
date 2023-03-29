@@ -1,4 +1,5 @@
-const {Joi, celebrate} = require('celebrate')
+/* eslint-disable import/no-extraneous-dependencies */
+const { Joi, celebrate } = require('celebrate');
 
 const regex = /^(http(s)?:\/\/)[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;
 
@@ -11,6 +12,6 @@ module.exports.createCardValidation = celebrate({
 
 module.exports.cardIdValidation = celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().required().hex().length(24)
-  })
-})
+    cardId: Joi.string().required().hex().length(24),
+  }),
+});

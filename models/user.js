@@ -1,5 +1,6 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const mongoose = require('mongoose');
-const validator = require('validator')
+const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
@@ -19,34 +20,33 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
-      validator: (v)=>{
-
-        return validator.isURL(v)},
-      message: "Некорректная ссылка",
-    }
+      validator: (v) => validator.isURL(v),
+      message: 'Некорректная ссылка',
+    },
   },
   email: {
     type: String,
     required: true,
     unique: true,
     validate: {
-      validator:(v)=>{
-        console.log(v)
-        return validator.isEmail(v)},
-      message: "Некорректный email",
-    }
+      validator: (v) => {
+        console.log(v);
+        return validator.isEmail(v);
+      },
+      message: 'Некорректный email',
+    },
   },
   password: {
     type: String,
     required: true,
-    select: false
+    select: false,
   },
 });
 
-userSchema.statics.findUserByCredentials = function(email, password) {
+// eslint-disable-next-line func-names
+userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
-      console.log(user)
       if (!user) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
@@ -60,6 +60,6 @@ userSchema.statics.findUserByCredentials = function(email, password) {
           return user;
         });
     });
-  }
+};
 
 module.exports = mongoose.model('user', userSchema);
