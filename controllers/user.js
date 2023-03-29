@@ -11,9 +11,7 @@ const jwt = require('jsonwebtoken')
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(SUCCESS).send({ data: users }))
-    .catch(() => {
-      res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
-    });
+    .catch(next)
 };
 
 module.exports.getUserById = (req, res) => {
@@ -24,12 +22,7 @@ module.exports.getUserById = (req, res) => {
       }
       return res.status(SUCCESS).send({ data: user });
     })
-    .catch(next)/* (err) => {
-      if (err.name === 'CastError') {
-        return res.status(WRONG_DATA).send({ message: 'Некорректный id' });
-      }
-      return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
-    }); */
+    .catch(next)
 };
 
 module.exports.createUser = (req, res) => {
@@ -41,18 +34,9 @@ module.exports.createUser = (req, res) => {
 })
     .then((user) => {
 
-      res.status(SUCCESS).send({ data: user });
+    return  res.status(SUCCESS).send({ data: user });
     })
-    .catch(next)/* err) => {
-      console.log(err)
-      if (err.name === 'ValidationError') {
-
-        return res
-          .status(WRONG_DATA)
-          .send({ message: 'переданы некорректные данные' });
-      }
-      return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
-    });*/
+    .catch(next)
 };
 
 module.exports.patchUserInfo = (req, res) => {
@@ -63,32 +47,18 @@ module.exports.patchUserInfo = (req, res) => {
     { new: true, runValidators: true },
   )
     .then((user) => {
-      res.status(SUCCESS).send({ data: user });
+   return   res.status(SUCCESS).send({ data: user });
     })
-    .catch(next)/* (err) => {
-      if (err.name === 'ValidationError') {
-        return res
-          .status(WRONG_DATA)
-          .send({ message: 'переданы некорректные данные' });
-      }
-      return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
-    });*/
+    .catch(next)
 
 };
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .then((user) => {
-      res.status(SUCCESS).send({ data: user });
+   return res.status(SUCCESS).send({ data: user });
     })
-    .catch(next)/* (err) => {
-      if (err.name === 'ValidationError') {
-        return res
-          .status(WRONG_DATA)
-          .send({ message: 'переданы некорректные данные' });
-      }
-      return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
-    }); */
+    .catch(next)
 };
 
 module.exports.loginUser = (req,res) => {
@@ -98,7 +68,7 @@ module.exports.loginUser = (req,res) => {
   .then((user)=>{
 
     const token = jwt.sign({_id: user._id}, 'key')
-    res.cookie('jwt', token,{ maxAge: 3600000 * 24 * 7, httpOnly: true }).send({token})
+  return  res.cookie('jwt', token,{ maxAge: 3600000 * 24 * 7, httpOnly: true }).send({token})
   })
   .catch((err)=>{
     res.status(401).send({ message: err.message })
@@ -109,8 +79,11 @@ module.exports.loginUser = (req,res) => {
 
 module.exports.getCurrentUser = (req,res) =>{
  const userId = req.user._id
- console.log(userId)
  return User.findById(userId)
-  .then((user)=> res.send({data: user}))
+  .then((user)=>{
+  if(user._id !== userId){
+    return res.status(WRONG_DATA).send({message: 'переданы некорректные данные'})
+  } res.status(SUCCESS).send({data: user})
+})
   .catch(next)
 }

@@ -2,6 +2,12 @@ const {Joi, celebrate} = require('celebrate')
 
 const regex = /^(http(s)?:\/\/)[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;
 
+module.exports.getUserByIdValidation = celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().required().hex().length(24)
+  })
+})
+
 module.exports.createUserValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
