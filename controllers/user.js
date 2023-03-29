@@ -4,17 +4,18 @@ const {
   NOT_FOUND,
   DEFAULT_ERROR,
   SUCCESS,
+  AUTH_ERROR
 } = require('../utils/constants');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(SUCCESS).send({ data: users }))
     .catch(next)
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
@@ -25,7 +26,7 @@ module.exports.getUserById = (req, res) => {
     .catch(next)
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
 
   bcrypt.hash(password, 10)
@@ -39,7 +40,7 @@ module.exports.createUser = (req, res) => {
     .catch(next)
 };
 
-module.exports.patchUserInfo = (req, res) => {
+module.exports.patchUserInfo = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -52,7 +53,7 @@ module.exports.patchUserInfo = (req, res) => {
     .catch(next)
 
 };
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .then((user) => {
@@ -71,13 +72,13 @@ module.exports.loginUser = (req,res) => {
   return  res.cookie('jwt', token,{ maxAge: 3600000 * 24 * 7, httpOnly: true }).send({token})
   })
   .catch((err)=>{
-    res.status(401).send({ message: err.message })
+    res.status(AUTH_ERROR).send({ message: "Ошибка авторизации" })
   })
 
 
 }
 
-module.exports.getCurrentUser = (req,res) =>{
+module.exports.getCurrentUser = (req,res, next) =>{
  const userId = req.user._id
  return User.findById(userId)
   .then((user)=>{

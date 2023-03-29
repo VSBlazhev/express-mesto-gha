@@ -7,6 +7,11 @@ const {
 } = require('../utils/constants');
 
 const errHandler = (err, req, res, next) =>{
+  if (err.statusCode) {
+    return res.status(err.statusCode).send(
+      { message: err.message },
+    );
+    }
   if (err.code === 11000) {
    return res.status(DB_ERROR).send({messge:"Email уже используется"})
 }
@@ -22,7 +27,7 @@ if (err.name === 'ValidationError') {
     .send({ message: 'переданы некорректные данные' });
 }
 
-return res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
+res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
 next()
 }
 

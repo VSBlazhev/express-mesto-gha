@@ -7,7 +7,7 @@ const {
   FORBIDDEN
 } = require('../utils/constants');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate(['owner', 'likes'])
     .then((cards) => {
@@ -16,7 +16,7 @@ module.exports.getCards = (req, res) => {
     .catch(next)
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
@@ -25,22 +25,24 @@ module.exports.createCard = (req, res) => {
     .catch(next)
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
       if(card.owner.toString() !== req.user._id){
+
        return res.status(FORBIDDEN).send({message:"Ошибка прав"})
       }
-     Card.remove(card)
-      })
+     Card.findByIdAndRemove(req.params.cardId)
      .then(()=> res.status(SUCCESS).send({message: "Карточка удалена"}))
+     .carch(next)
+      })
     .catch(next)
     }
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -56,7 +58,7 @@ module.exports.likeCard = (req, res) => {
     .catch(next)
 };
 
-module.exports.removeLike = (req, res) => {
+module.exports.removeLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
