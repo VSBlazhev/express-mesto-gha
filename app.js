@@ -10,6 +10,7 @@ const errHandler = require('./middlewares/errHandler')
 const { PORT = 3000 } = process.env;
 
 const { NOT_FOUND } = require('./utils/constants');
+const { loginValidation, createUserValidation } = require('./middlewares/userValidation');
 
 
 const app = express();
@@ -27,8 +28,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
   next();
 }); */
 
-app.post('/signin', loginUser);
-app.post('/signup', createUser);
+app.post('/signin',loginValidation, loginUser);
+app.post('/signup',createUserValidation, createUser);
 
 app.use('/users',auth, usersRouter);
 app.use('/cards',auth, cardsRouter);
