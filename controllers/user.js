@@ -35,7 +35,7 @@ module.exports.createUser = (req, res, next) => {
 })
     .then((user) => {
 
-    return  res.status(SUCCESS).send({ data: user });
+    return  res.status(SUCCESS).send({ name:user.name, about:user.about,avatar: user.avatar, email:user.email });
     })
     .catch(next)
 };
@@ -82,7 +82,7 @@ module.exports.getCurrentUser = (req,res, next) =>{
  const userId = req.user._id
  return User.findById(userId)
   .then((user)=>{
-  if(user._id !== userId){
+  if(user._id.toString() !== userId){
     return res.status(WRONG_DATA).send({message: 'переданы некорректные данные'})
   } res.status(SUCCESS).send({data: user})
 })

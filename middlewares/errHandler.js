@@ -7,13 +7,8 @@ const {
 } = require('../utils/constants');
 
 const errHandler = (err, req, res, next) =>{
-  if (err.statusCode) {
-    return res.status(err.statusCode).send(
-      { message: err.message },
-    );
-    }
   if (err.code === 11000) {
-   return res.status(DB_ERROR).send({messge:"Email уже используется"})
+   return res.status(DB_ERROR).send({message:"Email уже используется"})
 }
 if (err.name === 'CastError') {
   return res

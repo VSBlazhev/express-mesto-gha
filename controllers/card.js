@@ -37,7 +37,7 @@ module.exports.deleteCard = (req, res, next) => {
       }
      Card.findByIdAndRemove(req.params.cardId)
      .then(()=> res.status(SUCCESS).send({message: "Карточка удалена"}))
-     .carch(next)
+     .catch(next)
       })
     .catch(next)
     }
