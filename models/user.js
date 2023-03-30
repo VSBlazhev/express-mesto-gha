@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // eslint-disable-next-line func-names
-userSchema.statics.findUserByCredentials = function (email, password) {
+userSchema.statics.findUserByCredentials = function (email, password, next) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
@@ -55,8 +55,10 @@ userSchema.statics.findUserByCredentials = function (email, password) {
             return Promise.reject(new AuthorizationError('Неправильные почта или пароль'));
           }
           return user;
-        });
-    });
+        })
+        .catch(next);
+    })
+    .catch(next);
 };
 
 module.exports = mongoose.model('user', userSchema);

@@ -6,7 +6,6 @@ const {
   WRONG_DATA,
   NOT_FOUND,
   SUCCESS,
-  AUTH_ERROR,
 } = require('../utils/constants');
 
 module.exports.getUsers = (req, res, next) => {
@@ -62,9 +61,6 @@ module.exports.loginUser = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return res.status(AUTH_ERROR).send({ message: 'Ошибка авторизации' });
-      }
       const token = jwt.sign({ _id: user._id }, 'key');
       return res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send({ token });
     })

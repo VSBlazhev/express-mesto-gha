@@ -6,6 +6,9 @@ const {
 
 // eslint-disable-next-line consistent-return
 const errHandler = (err, req, res, next) => {
+  if (err.name === 'AuthorizationError') {
+    return res.status(err.statusCode).send({ message: err.message });
+  }
   if (err.code === 11000) {
     return res.status(DB_ERROR).send({ message: 'Email уже используется' });
   }
