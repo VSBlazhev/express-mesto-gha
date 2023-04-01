@@ -1,12 +1,11 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
-  WRONG_DATA,
-  NOT_FOUND,
   SUCCESS,
+  CREATED,
 } = require('../utils/constants');
+const NotFoundErr = require('../errors/notFoundErr');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -18,7 +17,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
+        throw new NotFoundErr('Пользователь не найден');
       }
       return res.status(SUCCESS).send({ data: user });
     })
@@ -34,7 +33,7 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.status(SUCCESS).send({
+    .then((user) => res.status(CREATED).send({
       name: user.name, about: user.about, avatar: user.avatar, email: user.email,
     }))
     .catch(next);
@@ -52,7 +51,7 @@ module.exports.patchUserInfo = (req, res, next) => {
 };
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.status(SUCCESS).send({ data: user }))
     .catch(next);
 };
@@ -70,11 +69,6 @@ module.exports.loginUser = (req, res, next) => {
 module.exports.getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
   return User.findById(userId)
-    .then((user) => {
-      if (user._id.toString() !== userId) {
-        return res.status(WRONG_DATA).send({ message: 'переданы некорректные данные' });
-      }
-      return res.status(SUCCESS).send({ data: user });
-    })
+    .then((user) => res.status(SUCCESS).send({ data: user }))
     .catch(next);
 };

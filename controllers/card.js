@@ -1,8 +1,9 @@
+const ForbiddenError = require('../errors/forbiddenErr');
 const Card = require('../models/card');
 const {
   NOT_FOUND,
   SUCCESS,
-  FORBIDDEN,
+  CREATED,
 } = require('../utils/constants');
 
 module.exports.getCards = (req, res, next) => {
@@ -18,22 +19,21 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
-      res.status(SUCCESS).send({ data: card });
+      res.status(CREATED).send({ data: card });
     })
     .catch(next);
 };
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
-    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
         return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
       if (card.owner.toString() !== req.user._id) {
-        return res.status(FORBIDDEN).send({ message: 'Ошибка прав' });
+        throw new ForbiddenError('Ошибка прав');
       }
-      Card.findByIdAndRemove(req.params.cardId)
+      return Card.findByIdAndRemove(req.params.cardId)
         .then(() => res.status(SUCCESS).send({ message: 'Карточка удалена' }))
         .catch(next);
     })

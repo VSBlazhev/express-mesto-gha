@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const { Joi, celebrate } = require('celebrate');
 
 const regex = /^(http(s)?:\/\/)[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;

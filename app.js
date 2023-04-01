@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -12,8 +11,8 @@ const errHandler = require('./middlewares/errHandler');
 
 const { PORT = 3000 } = process.env;
 
-const { NOT_FOUND } = require('./utils/constants');
 const { loginValidation, createUserValidation } = require('./middlewares/userValidation');
+const NotFoundError = require('./errors/notFoundErr');
 
 const app = express();
 app.use(cookieParser());
@@ -28,9 +27,7 @@ app.post('/signup', createUserValidation, createUser);
 app.use('/users', auth, usersRouter);
 app.use('/cards', auth, cardsRouter);
 
-app.use('/*', (req, res) => {
-  res.status(NOT_FOUND).send({ message: 'Страница не найдена' });
-});
+app.use('/*', (req, res, next) => next(new NotFoundError('Страница не найдена')));
 app.use(errors());
 app.use(errHandler);
 app.listen(PORT, () => {
