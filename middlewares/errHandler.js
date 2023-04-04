@@ -4,8 +4,7 @@ const {
   DB_ERROR,
 } = require('../utils/constants');
 
-// eslint-disable-next-line consistent-return
-const errHandler = (err, req, res, next) => {
+function errHandler(err, req, res, next) {
   if (err.statusCode) {
     return res.status(err.statusCode).send({ message: err.message });
   }
@@ -24,7 +23,7 @@ const errHandler = (err, req, res, next) => {
   }
 
   res.status(DEFAULT_ERROR).send({ message: 'Ошибка по умолчанию.' });
-  next();
-};
+  return next();
+}
 
 module.exports = errHandler;

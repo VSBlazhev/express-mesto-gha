@@ -4,13 +4,13 @@ const AuthorizationError = require('../errors/authorizationErr');
 function Auth(req, res, next) {
   const token = req.cookies.jwt;
   if (!token) {
-    throw new AuthorizationError('Необходима авторизация');
+    next(new AuthorizationError('Необходима авторизация'));
   }
   let payload;
   try {
     payload = jwt.verify(token, 'key');
   } catch (err) {
-    throw new AuthorizationError('Необходима авторизация');
+    next(new AuthorizationError('Необходима авторизация'));
   }
   req.user = payload;
   next();

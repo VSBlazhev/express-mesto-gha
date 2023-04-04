@@ -1,7 +1,7 @@
 const ForbiddenError = require('../errors/forbiddenErr');
+const NotFoundError = require('../errors/notFoundErr');
 const Card = require('../models/card');
 const {
-  NOT_FOUND,
   SUCCESS,
   CREATED,
 } = require('../utils/constants');
@@ -28,7 +28,7 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
+        throw new NotFoundError('Карточка не найдена');
       }
       if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Ошибка прав');
@@ -49,7 +49,7 @@ module.exports.likeCard = (req, res, next) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
+        throw new NotFoundError('Карточка не найдена');
       }
       return res.status(SUCCESS).send({ data: card });
     })
@@ -65,7 +65,7 @@ module.exports.removeLike = (req, res, next) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
+        throw new NotFoundError('Карточка не найдена');
       }
       return res.status(SUCCESS).send({ data: card });
     })
